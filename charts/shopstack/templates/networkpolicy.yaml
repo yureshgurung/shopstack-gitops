@@ -1,0 +1,72 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "shopstack.fullname" . }}-default-deny
+  labels:
+    {{- include "shopstack.labels" . | nindent 4 }}
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "shopstack.fullname" . }}-dns
+  labels:
+    {{- include "shopstack.labels" . | nindent 4 }}
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Egress
+
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+
+      ports:
+        - protocol: UDP
+          port: 53
+
+        - protocol: TCP
+          port: 53
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "shopstack.fullname" . }}-frontend-backend
+  labels:
+    {{- include "shopstack.labels" . | nindent 4 }}
+
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "shopstack.name" . }}
+      app.kubernetes.io/component: backend
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "shopstack.name" . }}
+              app.kubernetes.io/component: frontend
+
+      ports:
+        - protocol: TCP
+          port: {{ .Values.backend.service.targetPort }}
+{{- end }}

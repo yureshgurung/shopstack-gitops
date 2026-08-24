@@ -1,0 +1,78 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "shopstack.frontendName" . }}
+  labels:
+    {{- include "shopstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+
+  revisionHistoryLimit: 5
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "shopstack.name" . }}
+      app.kubernetes.io/component: frontend
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "shopstack.name" . }}
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+
+    spec:
+      serviceAccountName: {{ include "shopstack.serviceAccountName" . }}
+
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: {{ .Values.frontend.securityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.frontend.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.frontend.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.frontend.securityContext.fsGroup }}
+
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: frontend
+
+          image: >-
+            {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+            {{- if .Values.frontend.image.digest }}
+            @{{ .Values.frontend.image.digest }}
+            {{- end }}
+
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.frontend.service.targetPort }}
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: {{ include "shopstack.fullname" . }}-config
+
+          securityContext:
+            allowPrivilegeEscalation: {{ .Values.frontend.containerSecurityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.frontend.containerSecurityContext.readOnlyRootFilesystem }}
+            capabilities:
+              drop:
+                {{- range .Values.frontend.containerSecurityContext.capabilities.drop }}
+                - {{ . }}
+                {{- end }}
+
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+
+{{- end }}

@@ -1,0 +1,29 @@
+frontend:
+  enabled: true
+
+  image:
+    repository: yurut123/shopstack-frontend
+    tag: "sha-c65fcd9"
+    pullPolicy: IfNotPresent
+
+backend:
+  enabled: true
+
+  image:
+    repository: yurut123/shopstack-backend
+    tag: "sha-32a13ec"
+    pullPolicy: IfNotPresent
+
+namespace:
+  create: true
+  name: shopstack-dev
+
+httpRoute:
+  enabled: true
+
+  parentRefs:
+    - name: shopstack-gateway
+      namespace: istio-ingress
+
+  hostnames:
+    - shopstack-dev.example.com

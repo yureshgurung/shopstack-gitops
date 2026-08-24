@@ -1,0 +1,32 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+
+# metadata:
+#   name: shopstack-prod
+#   namespace: argocd
+
+# spec:
+#   project: shopstack-prod
+
+#   sources:
+
+#     - repoURL: https://github.com/<YOUR_GITHUB_USERNAME>/shopstack-gitops.git
+#       targetRevision: main
+#       path: charts/shopstack
+
+#       helm:
+#         valueFiles:
+#           - $values/environments/production/values.yaml
+
+#     - repoURL: https://github.com/<YOUR_GITHUB_USERNAME>/shopstack-gitops.git
+#       targetRevision: main
+#       ref: values
+
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: shopstack-prod
+
+#   syncPolicy:
+#     syncOptions:
+#       - CreateNamespace=false
+#       - ServerSideApply=true

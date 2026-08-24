@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: shopstack-dev
+  namespace: argocd
+
+spec:
+  description: ShopStack Development
+
+  sourceRepos:
+    - https://github.com/<YOUR_GITHUB_USERNAME>/shopstack-gitops.git
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: shopstack-dev
+
+  clusterResourceWhitelist: []
+
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: policy
+      kind: PodDisruptionBudget
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute

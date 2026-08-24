@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: shopstack-dev
+  namespace: argocd
+spec:
+  roles:
+
+    - name: developer
+      description: Developer access to ShopStack development
+
+      policies:
+        - p, proj:shopstack-dev:developer, applications, get, shopstack-dev/*, allow
+        - p, proj:shopstack-dev:developer, applications, sync, shopstack-dev/*, allow
+
+      groups:
+        - developers
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: shopstack-staging
+  namespace: argocd
+spec:
+  roles:
+
+    - name: qa
+      description: QA access to ShopStack staging
+
+      policies:
+        - p, proj:shopstack-staging:qa, applications, get, shopstack-staging/*, allow
+
+      groups:
+        - qa
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: shopstack-prod
+  namespace: argocd
+spec:
+  roles:
+
+    - name: production-operator
+      description: Controlled production deployment access
+
+      policies:
+        - p, proj:shopstack-prod:production-operator, applications, get, shopstack-prod/*, allow
+        - p, proj:shopstack-prod:production-operator, applications, sync, shopstack-prod/*, allow
+
+      groups:
+        - devops

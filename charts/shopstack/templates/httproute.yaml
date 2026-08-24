@@ -1,38 +1,41 @@
-{{- if .Values.httpRoute.enabled -}}
-{{- $fullName := include "shopstack.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{- if .Values.httpRoute.enabled }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
+
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "shopstack.fullname" . }}
   labels:
     {{- include "shopstack.labels" . | nindent 4 }}
-  {{- with .Values.httpRoute.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+
 spec:
   parentRefs:
-    {{- with .Values.httpRoute.parentRefs }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
+    {{- toYaml .Values.httpRoute.parentRefs | nindent 4 }}
+
   {{- with .Values.httpRoute.hostnames }}
   hostnames:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+
   rules:
-    {{- range .Values.httpRoute.rules }}
-    {{- with .matches }}
+    # Backend API
     - matches:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .filters }}
-      filters:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
+        - path:
+            type: PathPrefix
+            value: {{ .Values.httpRoute.backendPath }}
+
       backendRefs:
-        - name: {{ $fullName }}
-          port: {{ $svcPort }}
+        - name: {{ include "shopstack.fullname" . }}-backend
+          port: {{ .Values.backend.service.port }}
           weight: 1
-    {{- end }}
+
+    # Frontend
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.httpRoute.frontendPath }}
+
+      backendRefs:
+        - name: {{ include "shopstack.fullname" . }}-frontend
+          port: {{ .Values.frontend.service.port }}
+          weight: 1
 {{- end }}

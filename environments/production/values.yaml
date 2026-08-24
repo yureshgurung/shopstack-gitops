@@ -1,0 +1,37 @@
+# frontend:
+#   replicaCount: 2
+
+#   image:
+#     repository: yurut123/shopstack-frontend
+#     tag: "sha-c65fcd9"
+
+#   autoscaling:
+#     enabled: true
+#     minReplicas: 2
+#     maxReplicas: 4
+#     targetCPUUtilizationPercentage: 70
+
+#   podDisruptionBudget:
+#     enabled: true
+#     minAvailable: 1
+
+# backend:
+#   replicaCount: 2
+
+#   image:
+#     repository: yurut123/shopstack-backend
+#     tag: "sha-32a13ec"
+
+#   autoscaling:
+#     enabled: true
+#     minReplicas: 2
+#     maxReplicas: 6
+#     targetCPUUtilizationPercentage: 70
+
+#   podDisruptionBudget:
+#     enabled: true
+#     minAvailable: 1
+
+# httpRoute:
+#   hostnames:
+#     - shopstack-staging.example.com
