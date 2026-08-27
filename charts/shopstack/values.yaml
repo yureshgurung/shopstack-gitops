@@ -136,6 +136,14 @@ config:
 
   backend:
     logLevel: "INFO"
+    algorithm: "HS256"
+    accessTokenExpireMinutes: "30"
+
+    mysql:
+      host: "10.10.10.31"
+      port: "3306"
+      user: "shopstack"
+      database: "shopstack"
 
 networkPolicy:
   enabled: true
