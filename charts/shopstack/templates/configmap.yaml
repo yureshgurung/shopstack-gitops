@@ -7,3 +7,11 @@ metadata:
 data:
   LOG_LEVEL: {{ .Values.config.backend.logLevel | quote }}
   API_BASE_URL: {{ .Values.config.frontend.apiBaseUrl | quote }}
+
+  ALGORITHM: {{ .Values.config.backend.algorithm | quote }}
+  ACCESS_TOKEN_EXPIRE_MINUTES: {{ .Values.config.backend.accessTokenExpireMinutes | quote }}
+
+  MYSQL_HOST: {{ .Values.config.backend.mysql.host | quote }}
+  MYSQL_PORT: {{ .Values.config.backend.mysql.port | quote }}
+  MYSQL_USER: {{ .Values.config.backend.mysql.user | quote }}
+  MYSQL_DB: {{ .Values.config.backend.mysql.database | quote }}
